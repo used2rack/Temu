@@ -51,7 +51,7 @@ function draw() {
     // po osiągnięciu 100% przekieruj tylko raz
     if (pct >= 100 && !redirected) {
       redirected = true;
-      window.location.href = 'https://example.com';
+      window.location.href = 'https://michaelskl.github.io/Temu/';
     }
   } else {
     // pierwsza plansza
