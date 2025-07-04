@@ -3,6 +3,8 @@ let showSecond = false;
 let loadPct = 0;
 let redirected = false;
 const X = 200, Y = 75, W = 560, H = 390;
+let lastUpdateTime = 0;
+let buttonArea = { x: 380, y: 400, w: 200, h: 50 }; // obszar klikalny na planszy
 
 function preload() {
   bg       = loadImage('assets/backgroundblur.jpg');
@@ -12,53 +14,54 @@ function preload() {
 
 function setup() {
   createCanvas(960, 540);
+  textFont('Arial');
+  noStroke();
 }
 
 function draw() {
-  // tło + blur
+  background(0);
   image(bg, 0, 0, width, height);
-  filter(BLUR, 6);
 
   if (showSecond) {
-    // przyciemnienie całego ekranu
-    fill(0, 0.3 * 255);
+    fill(0, 76); // overlay
     rect(0, 0, width, height);
-    // rysuj drugą planszę
     image(plansza2, X, Y, W, H);
 
-    // animacja ładowania
-    if (loadPct < 100) loadPct += 0.5;
+    if (millis() - lastUpdateTime > 100 && loadPct < 100) {
+      loadPct += 2;
+      lastUpdateTime = millis();
+    }
+
     const pct = floor(loadPct);
     push();
-      // przesunięte nieco w prawo
       translate(X + W / 2 + 100, Y + H / 2);
       noFill();
-      stroke(200);
-      strokeWeight(8);
-      ellipse(0, 0, 120);
+      stroke(200); strokeWeight(6);
+      ellipse(0, 0, 80);
       stroke('#E9943A');
-      arc(0, 0, 120, 120,
-          -HALF_PI,
-          -HALF_PI + TWO_PI * (pct / 100)
-      );
-      noStroke();
-      fill(255);
-      textAlign(CENTER, CENTER);
-      textSize(32);
+      arc(0, 0, 80, 80, -HALF_PI, -HALF_PI + TWO_PI * (pct / 100));
+      noStroke(); fill(255);
+      textAlign(CENTER, CENTER); textSize(20);
       text(pct + '%', 0, 0);
     pop();
 
-    // po osiągnięciu 100% przekieruj tylko raz
     if (pct >= 100 && !redirected) {
       redirected = true;
       window.location.href = 'https://michaelskl.github.io/Temu/';
     }
+
   } else {
-    // pierwsza plansza
     image(plansza1, X, Y, W, H);
+    // NIC NIE RYSUJEMY NA WIERZCH
   }
 }
 
 function mousePressed() {
-  showSecond = true;
+  if (!showSecond) {
+    // kliknięcie w obszar graficznego przycisku na planszy 1
+    if (mouseX >= buttonArea.x && mouseX <= buttonArea.x + buttonArea.w &&
+        mouseY >= buttonArea.y && mouseY <= buttonArea.y + buttonArea.h) {
+      showSecond = true;
+    }
+  }
 }
